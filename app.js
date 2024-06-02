@@ -79,7 +79,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("Hello, MoodMate!");
 });
 
 app.post(
@@ -88,9 +88,22 @@ app.post(
     failureFlash: true,
     failureRedirect: "/login",
   }),
-  (req, res) => {
-    res.send("successfully logged in!");
-  }
+  catchAsync(async (req, res) => {
+    try {
+      const { username } = req.body;
+      const user = await User.findOne({ username });
+      res.send({
+        error: false,
+        message: "success",
+        loginResult: { userId: user._id, name: username, token: "" },
+      });
+    } catch (e) {
+      res.send({
+        error: true,
+        message: e.message,
+      });
+    }
+  })
 );
 
 app.post("/logout", isLoggedIn, (req, res, next) => {
@@ -98,7 +111,7 @@ app.post("/logout", isLoggedIn, (req, res, next) => {
     if (err) {
       return next(err);
     } else {
-      res.send("successfully logged out!");
+      res.send({ error: false, message: "log-out success" });
     }
   });
 });
@@ -114,11 +127,14 @@ app.post(
       req.login(registeredUser, (err) => {
         if (err) res.send(err);
         else {
-          res.send("account registered successfully");
+          res.send({
+            error: false,
+            message: "User Created",
+          });
         }
       });
     } catch (e) {
-      res.send(e.message);
+      res.send({ error: true, message: e.message });
     }
   })
 );
