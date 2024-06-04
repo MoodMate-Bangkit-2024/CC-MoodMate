@@ -7,27 +7,13 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+const authRoutes = require("./routes/authRoute");
+
+/* Cookies & Sessions */
+const cookieParser = require("cookie-parser");
+
 /* Mongoose */
 const mongoose = require("mongoose");
-
-const path = require("path");
-
-/* Mongoose Models */
-const User = require("./models/user");
-
-/* Error Handlling */
-const ExpressError = require("./utils/ExpressError");
-const catchAsync = require("./utils/catchAsync");
-
-/* Cookies, Session, and Flash */
-const session = require("express-session");
-
-/* Connect Mongo */
-const MongoStore = require("connect-mongo");
-
-/* Passport */
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
 
 const dbUrl = process.env.DB_URL;
 
@@ -37,107 +23,20 @@ async function main() {
   console.log("Database Connected");
 }
 
-/* Middleware etc */
-const { isLoggedIn } = require("./middleware");
+/* Middleware */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
+// To set cookie without cookie parser you need to use the setHeader('Set-Cookie, 'x=y') method, and in javascript you can access it with document.cookie
+// If a cookie already exist in the browser, than it will just replace it with a new value
+// The default value of Expires/MaxAge in the browser is Session, which means if you close the browser, than the cookies will also be deleted
+// You can put optional object on to you cookie-parser to set the maxAge, secure, httpOnly etc.
+// If you set the secure property to true, that means that the cookie will only be sent via secure connection e.g HTTPS.
+// If you set the httpOnly property to true, that means that now the cookies can't be accessed via JavaScript, and it can only be transffered via HTTP
+// When it comes to authentication, in production you should only use authentication cookie over and HTTPS connection, and you don't want them to be accessed or modified by the client side code.
 
-const secret = "foo";
-const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  touchAfter: 24 * 60 * 60,
-  crypto: {
-    secret,
-  },
-});
-store.on("error", function (e) {
-  console.log(e);
-});
-
-app.use(
-  session({
-    store,
-    name: "session",
-    secret,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      httpOnly: true,
-    },
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  next();
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello, MoodMate!");
-});
-
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-  }),
-  catchAsync(async (req, res) => {
-    try {
-      const { username } = req.body;
-      const user = await User.findOne({ username });
-      res.send({
-        error: false,
-        message: "success",
-        loginResult: { userId: user._id, name: username, token: "" },
-      });
-    } catch (e) {
-      res.send({
-        error: true,
-        message: e.message,
-      });
-    }
-  })
-);
-
-app.post("/logout", isLoggedIn, (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    } else {
-      res.send({ error: false, message: "log-out success" });
-    }
-  });
-});
-
-app.post(
-  "/register",
-  catchAsync(async (req, res) => {
-    try {
-      console.log(req.body);
-      const { username, email, password } = req.body;
-      const user = new User({ username, email });
-      const registeredUser = await User.register(user, password);
-      req.login(registeredUser, (err) => {
-        if (err) res.send(err);
-        else {
-          res.send({
-            error: false,
-            message: "User Created",
-          });
-        }
-      });
-    } catch (e) {
-      res.send({ error: true, message: e.message });
-    }
-  })
-);
+// Routes
+app.use(authRoutes);
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
