@@ -1,5 +1,6 @@
 // Models
 const User = require("../models/user");
+const Music = require("../models/music");
 
 //JWT
 const jwt = require("jsonwebtoken");
@@ -81,5 +82,28 @@ module.exports.login_post = async (req, res) => {
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ error: true, message: errors });
+  }
+};
+
+module.exports.get_recommendation = async (req, res) => {
+  let { type, category } = req.params;
+
+  if (type === "music") {
+    try {
+      const recommendation = await Music.find({
+        category,
+      });
+      res.status(200).json({
+        error: false,
+        message: "success",
+        type,
+        category,
+        data: recommendation,
+      });
+    } catch (err) {
+      res
+        .status(400)
+        .json({ error: true, message: "Failed to query music recommendation" });
+    }
   }
 };
