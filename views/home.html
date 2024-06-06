@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoodMate API Documentation</title>
+    <!-- CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="px-24 py-16" style="font-family: Inter, sans-serif">
+    <h1 class="text-3xl font-bold">Moodmate API</h1>
+    <div class="mt-8">
+      <h2 class="text-2xl font-semibold">Endpoint</h2>
+      <a
+        href="http://34.101.171.205"
+        class="underline text-emerald-600 text-sm font-medium"
+        >http://34.101.171.205</a
+      >
+    </div>
+    <div class="mt-12">
+      <h3 class="text-xl font-semibold">Register User / SignUp</h3>
+      <ul class="list-disc list-inside mt-4">
+        <li>
+          URL: <span class="text-orange-400 bg-[#f8f8f8] px-2">/register</span>
+        </li>
+        <li class="mt-4">Method: POST</li>
+        <li class="mt-4">
+          Request Body:
+          <div class="ml-8">
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">username</span> as
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+          </div>
+          <div class="ml-8">
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">email</span> as
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span> must
+            be unique
+          </div>
+          <div class="ml-8">
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">password</span> as
+            <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+          </div>
+        </li>
+        <li class="mt-4">
+          Reponse:
+          <div class="bg-[#f8f8f8] p-8 mt-2">
+            { <br />
+            &emsp;"error": false, <br />
+            &emsp;"message": "User Created", <br />
+            &emsp;"user": "66604cc6abea2361572d8e72" <br />
+            }
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">LogIn</h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL: <span class="text-orange-400 bg-[#f8f8f8] px-2">/login</span>
+      </li>
+      <li class="mt-4">Method: POST</li>
+      <li class="mt-4">
+        Request Body:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">email</span> as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+        </div>
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">password</span> as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          &emsp;"error": false, <br />
+          &emsp;"message": "success", <br />
+          &emsp;"loginResult": { <br />
+          &emsp;&emsp;"userId": "66604cc6abea2361572d8e72", <br />
+          &emsp;&emsp;"name": "moodmate5", <br />
+          &emsp;&emsp;"token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjA0Y2M2YWJlYTIzNjE1NzJkOGU3MiIsImlhdCI6MTcxNzY3MjExMiwiZXhwIjoxNzE3OTMxMzEyfQ.L92Rwcj7Sv5UBSzoI5PN16T6I8GdLI_gTXmUwOLrHdY"
+          <br />
+          &emsp;} <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">
+      Save Today's Journal & Predict User Mood
+    </h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL:
+        <span class="text-orange-400 bg-[#f8f8f8] px-2">/predict/mood</span>
+      </li>
+      <li class="mt-4">Method: POST</li>
+      <li class="mt-4">
+        Request Body:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">title</span> as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+        </div>
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">text</span> as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Request Header:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">Authorization</span>
+          as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">JSON Web Token</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          &emsp; "error": false, <br />
+          &emsp;"message": "success", <br />
+          &emsp;data": { <br />
+          &emsp;&emsp;"title": "Sekolah ku hari ini ...", <br />
+          &emsp;&emsp;"text": "Saya telat mengumpulkan tugas kemarin, saya
+          merasa gelisah", <br />
+          &emsp;&emsp;"mood": "fear", <br />
+          &emsp;&emsp;"_id": "6661b6d9ae693a83430ed470", <br />
+          &emsp;&emsp;"author": "66604cc6abea2361572d8e72", <br />
+          &emsp;&emsp;"createdAt": "Kamis, 6 Juni 2024", <br />
+          &emsp;&emsp;"__v": 0 <br />
+          &emsp;} <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">Get Current User's All Daily Journals</h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL:
+        <span class="text-orange-400 bg-[#f8f8f8] px-2">/journals</span>
+      </li>
+      <li class="mt-4">Method: GET</li>
+      <li class="mt-4">Request Body: -</li>
+      <li class="mt-4">
+        Request Header:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">Authorization</span>
+          as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">JSON Web Token</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          &emsp; "error": false, <br />
+          &emsp;"message": "success", <br />
+          &emsp;"data": [ <br />
+          &emsp;&emsp;{ "_id": "666198cce91524041c1678f0", "title": "Sekolah ku
+          hari ini ...", "text": "saya telat mengumpulkan tugas saya kemarin,
+          saya merasa gelisah", "mood": "fear", "author":
+          "66604cc6abea2361572d8e72", "createdAt": "Kamis, 6 Juni 2024", "__v":
+          0 }, <br />
+          &emsp;&emsp;{ "_id": "66619974c5f187abea4fcc46", "title": "Liburan cuy
+          ...", "text": "Liburan kemarin saya merasa senang", "mood": "happy",
+          "author": "66604cc6abea2361572d8e72", "createdAt": "Kamis, 6 Juni
+          2024", "__v": 0 }, <br />
+          &emsp;&emsp;{ "_id": "6661b6d9ae693a83430ed470", "title": "Magang
+          ...", "text": "Saya capek sekali ", "mood": "fear", "author":
+          "66604cc6abea2361572d8e72", "createdAt": "Kamis, 6 Juni 2024", "__v":
+          0 } <br />
+          &emsp;] <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">Get Happy Music Recommendation</h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL:
+        <span class="text-orange-400 bg-[#f8f8f8] px-2"
+          >/recommendation/music/happy</span
+        >
+      </li>
+      <li class="mt-4">Method: GET</li>
+      <li class="mt-4">Request Body: -</li>
+      <li class="mt-4">Request Header: -</li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          &emsp;"error": false, <br />
+          &emsp;"message": "success", <br />
+          &emsp;"type": "music", <br />
+          &emsp;"category": "happy", <br />
+          &emsp;"data": [ <br />
+          &emsp;&emsp;{ "_id": "6660a6925c1f2342a777b3b7", "category": "happy",
+          "title": "Happy", "singer": "Pharrel Williams", "link":
+          "https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH?si=8f3232c306bf4fe1",
+          "__v": 0 }, <br />
+          &emsp;&emsp;{ "_id": "6660a6925c1f2342a777b3b8", "category": "happy",
+          "title": "Can't stop the feeling!", "singer": "Justin Timberlake",
+          "link":
+          "https://open.spotify.com/album/40LbnfieVTWtHrK24WQeEB?si=qehnL7o7Sd-v-SJfHF8_dA",
+          "__v": 0 }, <br />
+          &emsp;&emsp;{ "_id": "6660a6925c1f2342a777b3b9", "category": "happy",
+          "title": "Walking on Sunshine", "singer": "Katrina and the Waves",
+          "link":
+          "https://open.spotify.com/track/05wIrZSwuaVWhcv5FfqeH0?si=f7ffa3ed6e2445d8",
+          "__v": 0 }, <br />
+          &emsp;&emsp;{ "_id": "6660a6925c1f2342a777b3ba", "category": "happy",
+          "title": "Don't worry, be happy", "singer": "Bobby McFerrin", "link":
+          "https://open.spotify.com/track/5YbgcwHjQhdT1BYQ4rxWlD?si=7e8108a9d2164228",
+          &emsp;&emsp;"__v": 0 }, <br />
+          &emsp;&emsp; ... <br />
+          &emsp;] <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+</html>

@@ -1,6 +1,9 @@
 const { Router } = require("express");
 const authController = require("../controllers/authController");
 
+// Middleware
+const { isAuthenticated } = require("../middleware");
+
 /* Error Handlling */
 const catchAsync = require("../utils/catchAsync");
 
@@ -17,6 +20,15 @@ router.post("/logout", (req, res) => {});
 router.get(
   "/recommendation/:type/:category",
   catchAsync(authController.get_recommendation)
+);
+
+// Mood Prediction & ChatBot
+router.get("/journals", isAuthenticated, authController.get_user_journal);
+
+router.post(
+  "/predict/mood",
+  isAuthenticated,
+  catchAsync(authController.post_predict_mood)
 );
 
 module.exports = router;

@@ -2,6 +2,8 @@
 const User = require("../models/user");
 const Music = require("../models/music");
 
+const path = require("path");
+
 //JWT
 const jwt = require("jsonwebtoken");
 
@@ -41,7 +43,7 @@ const createToken = (id) => {
 };
 
 module.exports.home_get = (req, res) => {
-  res.send("Hello Moodmate! ©CS241-PS017@Bangkit2024");
+  res.sendFile(path.join(__dirname, "../views/home.html"));
 };
 
 module.exports.register_post = async (req, res) => {
@@ -85,6 +87,7 @@ module.exports.login_post = async (req, res) => {
   }
 };
 
+// Recommendation
 module.exports.get_recommendation = async (req, res) => {
   let { type, category } = req.params;
 
@@ -101,9 +104,92 @@ module.exports.get_recommendation = async (req, res) => {
         data: recommendation,
       });
     } catch (err) {
-      res
-        .status(400)
-        .json({ error: true, message: "Failed to query music recommendation" });
+      res.status(400).json({
+        error: true,
+        message: `Failed to query music recommendation - ${err}`,
+      });
     }
+  }
+};
+
+// Mood Prediction & ChatBot
+const tf = require("@tensorflow/tfjs-node");
+const predictMood = require("../services/inferenceService");
+
+const Journal = require("../models/journal");
+
+module.exports.get_user_journal = async (req, res) => {
+  try {
+    const user = req.user;
+    const journals = await Journal.find({ author: user });
+    journals.reverse();
+    res.status(200).json({ error: false, message: "success", data: journals });
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: true, message: `Failed to get user's journals - ${err}` });
+  }
+};
+
+module.exports.post_predict_mood = async (req, res) => {
+  try {
+    const model = await tf.loadLayersModel(process.env.JOURNAL_MODEL_URL);
+
+    const { title, text } = req.body;
+
+    const { mood, confidenceScore } = await predictMood(model, text);
+
+    const journal = new Journal({ title, text, mood });
+    journal.author = req.user;
+    // Convert today's date
+    const dayNames = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    function formatDateToIndonesian(date) {
+      const dayName = dayNames[date.getDay()];
+      const day = date.getDate();
+      const monthName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+
+      return `${dayName}, ${day} ${monthName} ${year}`;
+    }
+
+    const now = new Date(Date.now());
+    journal.createdAt = formatDateToIndonesian(now);
+
+    await journal.save();
+
+    res.status(200).json({
+      error: false,
+      message: "success",
+      data: journal,
+    });
+  } catch (err) {
+    res.status(400).json({
+      error: true,
+      message: `Failed to predict moood - ${err}`,
+    });
   }
 };
