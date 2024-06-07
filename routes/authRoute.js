@@ -22,7 +22,7 @@ router.get(
   catchAsync(authController.get_recommendation)
 );
 
-// Mood Prediction & ChatBot
+// Mood Prediction
 router.get("/journals", isAuthenticated, authController.get_user_journal);
 
 router.post(
@@ -31,6 +31,17 @@ router.post(
   catchAsync(authController.post_predict_mood)
 );
 
-router.post("/predict/prompt", catchAsync(authController.post_user_prompt));
+// Chat Bot
+router.get(
+  "/chatbot/:id",
+  isAuthenticated,
+  catchAsync(authController.get_user_chat)
+);
+
+router.post(
+  "/chatbot/:id/prompt",
+  isAuthenticated,
+  catchAsync(authController.post_user_prompt)
+);
 
 module.exports = router;

@@ -22,6 +22,7 @@
         >http://34.101.171.205</a
       >
     </div>
+    <p class="text-5xl mt-12">USER AUTHENTICATION ENDPOINT</p>
     <div class="mt-12">
       <h3 class="text-xl font-semibold">Register User / SignUp</h3>
       <ul class="list-disc list-inside mt-4">
@@ -94,6 +95,7 @@
       </li>
     </ul>
   </div>
+  <p class="text-5xl mt-12">USER JOURNAL ENDPOINT</p>
   <div class="mt-12">
     <h3 class="text-xl font-semibold">
       Save Today's Journal & Predict User Mood
@@ -187,6 +189,91 @@
       </li>
     </ul>
   </div>
+  <p class="text-5xl mt-12">USER CHATBOT ENDPOINT</p>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">
+      Save One Prompt Into Database / When User Click Send Button
+    </h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL:
+        <span class="text-orange-400 bg-[#f8f8f8] px-2"
+          >/chatbot/:id/prompt</span
+        >
+        -> ID nya ini ID user yang di dapat setelah registrasi
+      </li>
+      <li class="mt-4">Method: POST</li>
+      <li class="mt-4">
+        Request Body:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">prompt</span>
+          as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">string</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Request Header:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">Authorization</span>
+          as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">JSON Web Token</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          &emsp;"error": false, <br />
+          &emsp;"message": "success", <br />
+          &emsp;"data": { <br />
+          &emsp;&emsp;"prompt": "saya sedih banget nih T^T", "_id":
+          "6662bae15ff80d48ebb3e12b", "moodmateResponse": "Halo user! Saya
+          moodmate siap membantu!", "author": "6662b7754d19f569bd1e50d2", "__v":
+          0 <br />
+          &emsp;} <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="mt-12">
+    <h3 class="text-xl font-semibold">Get User Chat History</h3>
+    <ul class="list-disc list-inside mt-4">
+      <li>
+        URL:
+        <span class="text-orange-400 bg-[#f8f8f8] px-2">/chatbot/:id</span>
+        -> ID nya ini ID user yang di dapat setelah registrasi
+      </li>
+      <li class="mt-4">Method: GET</li>
+      <li class="mt-4">Request Body: -</li>
+      <li class="mt-4">
+        Request Header:
+        <div class="ml-8">
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">Authorization</span>
+          as
+          <span class="text-orange-400 bg-[#f8f8f8] px-2">JSON Web Token</span>
+        </div>
+      </li>
+      <li class="mt-4">
+        Reponse:
+        <div class="bg-[#f8f8f8] p-8 mt-2">
+          { <br />
+          "error": false, <br />
+          "message": "success", <br />
+          "data": [ <br />
+          &emsp;&emsp;{ "_id": "6662bad15ff80d48ebb3e126", "prompt": "Halo
+          moodmate!!", "moodmateResponse": "Halo user! Saya moodmate siap
+          membantu!", "author": "6662b7754d19f569bd1e50d2", "__v": 0 }, <br />
+          &emsp;&emsp;{ "_id": "6662bae15ff80d48ebb3e12b", "prompt": "saya sedih
+          banget nih T^T", "moodmateResponse": "Halo user! Saya moodmate siap
+          membantu!", "author": "6662b7754d19f569bd1e50d2", "__v": 0 } <br />
+          &emsp;] <br />
+          }
+        </div>
+      </li>
+    </ul>
+  </div>
+  <p class="text-5xl mt-12">USER RECOMMENDATION ENDPOINT</p>
   <div class="mt-12">
     <h3 class="text-xl font-semibold">Get Happy Music Recommendation</h3>
     <ul class="list-disc list-inside mt-4">

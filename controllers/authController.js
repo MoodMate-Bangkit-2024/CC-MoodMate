@@ -1,6 +1,12 @@
 // Models
 const User = require("../models/user");
+
 const Music = require("../models/music");
+
+const Journal = require("../models/journal");
+
+const Prompt = require("../models/prompt");
+const Chat = require("../models/chat");
 
 const path = require("path");
 
@@ -60,6 +66,7 @@ module.exports.register_post = async (req, res) => {
 
     This sets the expiration time of the cookie that stores the JWT. The cookie will be removed from the client (browser or mobile app) after this period, ensuring the client no longer sends an expired token to the server. Synchronizing this with the JWT expiration ensures that the token is not kept longer than its valid period.
     */
+    const chat = await Chat.create({ author: user._id, prompts: [] });
     res
       .status(201)
       .json({ error: false, message: "User Created", user: user._id });
@@ -112,11 +119,9 @@ module.exports.get_recommendation = async (req, res) => {
   }
 };
 
-// Mood Prediction & ChatBot
+// Mood Prediction
 const tf = require("@tensorflow/tfjs-node");
 const predictMood = require("../services/inferenceService");
-
-const Journal = require("../models/journal");
 
 module.exports.get_user_journal = async (req, res) => {
   try {
@@ -194,18 +199,48 @@ module.exports.post_predict_mood = async (req, res) => {
   }
 };
 
+// Chat Bot
+module.exports.get_user_chat = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id } = req.params; // User ID not Chat ID
+    if (user === id) {
+      const chat = await Chat.findOne({ author: user }).populate("prompts");
+      return res
+        .status(400)
+        .json({ error: false, message: "success", data: chat.prompts });
+    } else {
+      throw "You don't have access to this chat resource";
+    }
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: true, message: `Failed to query user chat - ${err}` });
+  }
+};
+
 module.exports.post_user_prompt = async (req, res) => {
   try {
-    const model = await tf.loadLayersModel(process.env.CHATBOT_MODEL_URL);
+    /* const model = await tf.loadLayersModel(process.env.CHATBOT_MODEL_URL); */
 
     const { prompt } = req.body;
+    const promptAndResponse = new Prompt({ prompt });
+    promptAndResponse.moodmateResponse =
+      "Halo user! Saya moodmate siap membantu!";
+    promptAndResponse.author = req.user;
 
-    const { mooodmateResponse } = await predictMood(model, prompt);
+    const { id } = req.params;
+    const chat = await Chat.findOne({ author: id });
+    chat.prompts.push(promptAndResponse);
+
+    await promptAndResponse.save();
+    await chat.save();
+    /* const { mooodmateResponse } = await predictMood(model, prompt); */
 
     res.status(200).json({
       error: false,
       message: "success",
-      data: mooodmateResponse,
+      data: promptAndResponse,
     });
   } catch (err) {
     res.status(400).json({
