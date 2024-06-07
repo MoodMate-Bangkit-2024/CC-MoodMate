@@ -92,7 +92,7 @@ async function predictMood(model, text) {
   try {
     const preprocessedText = preprocessText(text);
     const sequences = textsToSequences([preprocessedText]);
-    const paddedSequences = padSequences(sequences, 250); // max_length = 300
+    const paddedSequences = padSequences(sequences, 250);
     const inputTensor = tf.tensor2d(paddedSequences);
 
     const prediction = model.predict(inputTensor);
@@ -121,7 +121,7 @@ async function predictMood(model, text) {
     mood = labels[maxIndex];
     const confidenceScore = probabilities[maxIndex].toFixed(2);
 
-    return { mood, confidenceScore };
+    return { mood };
   } catch (err) {
     throw `Terjadi kesalahan dalam melakukan prediksi - ${err}`;
   }

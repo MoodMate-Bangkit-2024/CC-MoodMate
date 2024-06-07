@@ -31,4 +31,6 @@ router.post(
   catchAsync(authController.post_predict_mood)
 );
 
+router.post("/predict/prompt", catchAsync(authController.post_user_prompt));
+
 module.exports = router;

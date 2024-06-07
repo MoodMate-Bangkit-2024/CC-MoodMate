@@ -137,7 +137,7 @@ module.exports.post_predict_mood = async (req, res) => {
 
     const { title, text } = req.body;
 
-    const { mood, confidenceScore } = await predictMood(model, text);
+    const { mood } = await predictMood(model, text);
 
     const journal = new Journal({ title, text, mood });
     journal.author = req.user;
@@ -190,6 +190,27 @@ module.exports.post_predict_mood = async (req, res) => {
     res.status(400).json({
       error: true,
       message: `Failed to predict moood - ${err}`,
+    });
+  }
+};
+
+module.exports.post_user_prompt = async (req, res) => {
+  try {
+    const model = await tf.loadLayersModel(process.env.CHATBOT_MODEL_URL);
+
+    const { prompt } = req.body;
+
+    const { mooodmateResponse } = await predictMood(model, prompt);
+
+    res.status(200).json({
+      error: false,
+      message: "success",
+      data: mooodmateResponse,
+    });
+  } catch (err) {
+    res.status(400).json({
+      error: true,
+      message: `Failed to get moodmate response - ${err}`,
     });
   }
 };
