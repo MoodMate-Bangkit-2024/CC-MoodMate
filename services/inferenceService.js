@@ -93,7 +93,7 @@ async function predictMood(model, text) {
     const preprocessedText = preprocessText(text);
     const sequences = textsToSequences([preprocessedText]);
     const paddedSequences = padSequences(sequences, 250);
-    const inputTensor = tf.tensor2d(text);
+    const inputTensor = tf.tensor2d(paddedSequences);
 
     const prediction = model.predict(inputTensor);
     const probabilities = prediction.arraySync()[0];
