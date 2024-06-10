@@ -4,6 +4,8 @@ const User = require("../models/user");
 const Music = require("../models/music");
 const Article = require("../models/article");
 
+const Explore = require("../models/explore");
+
 const Journal = require("../models/journal");
 
 const Prompt = require("../models/prompt");
@@ -135,6 +137,26 @@ module.exports.get_recommendation = async (req, res) => {
         message: `Failed to query article recommendation - ${err}`,
       });
     }
+  }
+};
+
+// Explore
+module.exports.get_explore = async (req, res) => {
+  let { type } = req.params;
+
+  try {
+    const explore = await Explore.find({ type });
+    res.status(200).json({
+      error: false,
+      message: "success",
+      type,
+      data: explore,
+    });
+  } catch (err) {
+    res.status(400).json({
+      error: true,
+      message: `Failed to query ${type} explore - ${err}`,
+    });
   }
 };
 

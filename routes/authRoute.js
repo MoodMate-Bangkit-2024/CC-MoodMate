@@ -22,6 +22,9 @@ router.get(
   catchAsync(authController.get_recommendation)
 );
 
+// User exploration
+router.get("/explore/:type", catchAsync(authController.get_explore));
+
 // Mood Prediction
 router.get("/journals", isAuthenticated, authController.get_user_journal);
 
