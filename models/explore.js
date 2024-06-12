@@ -14,6 +14,9 @@ const exploreSchema = new Schema({
     type: String,
   },
   link: { type: String, required: true },
+  imageUrl: String,
+  description: String,
+  publishedAt: String,
 });
 
 module.exports = mongoose.model("Explore", exploreSchema);

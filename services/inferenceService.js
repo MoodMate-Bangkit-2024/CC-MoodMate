@@ -111,17 +111,17 @@ async function predictMood(model, text) {
       }
     }
 
-    /* const moodPredictions = {
+    const moodPredictions = {
       anger: probabilities[0].toFixed(2),
       fear: probabilities[1].toFixed(2),
       happy: probabilities[2].toFixed(2),
       sadness: probabilities[3].toFixed(2),
-    }; */
+    };
 
     mood = labels[maxIndex];
     const confidenceScore = probabilities[maxIndex].toFixed(2);
 
-    return { mood };
+    return { mood, moodPredictions };
   } catch (err) {
     throw `Terjadi kesalahan dalam melakukan prediksi - ${err}`;
   }

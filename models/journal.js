@@ -10,6 +10,9 @@ const journalSchema = new Schema({
   createdAt: {
     type: String,
   },
+  updatedAt: {
+    type: String,
+  },
   title: {
     type: String,
     required: [true, "Title field is required!"],

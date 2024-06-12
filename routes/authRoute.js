@@ -27,11 +27,17 @@ router.get("/explore/:type", catchAsync(authController.get_explore));
 
 // Mood Prediction
 router.get("/journals", isAuthenticated, authController.get_user_journal);
-
+router.get("/journals/:id", isAuthenticated, authController.get_single_journal);
 router.post(
   "/predict/mood",
   isAuthenticated,
   catchAsync(authController.post_predict_mood)
+);
+router.put("/journals/:id", isAuthenticated, authController.put_user_journal);
+router.delete(
+  "/journals/:id",
+  isAuthenticated,
+  authController.delete_user_journal
 );
 
 // Chat Bot

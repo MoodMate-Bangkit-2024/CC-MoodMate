@@ -177,9 +177,32 @@ module.exports.get_user_journal = async (req, res) => {
   }
 };
 
+module.exports.get_single_journal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const journal = await Journal.findById(id);
+    res.status(200).json({ error: false, message: "success", data: journal });
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: true, message: `Failed to get user's journals - ${err}` });
+  }
+};
+
 module.exports.post_predict_mood = async (req, res) => {
   try {
-    const model = await tf.loadLayersModel(process.env.JOURNAL_MODEL_URL);
+    class L2 {
+      static className = "L2";
+
+      constructor(config) {
+        return tf.regularizers.l1l2(config);
+      }
+    }
+    tf.serialization.registerClass(L2);
+
+    const model = await tf.loadLayersModel(
+      process.env.JOURNAL_MODEL_EXERCISE_URL
+    );
 
     const { title, text } = req.body;
 
@@ -237,6 +260,102 @@ module.exports.post_predict_mood = async (req, res) => {
       error: true,
       message: `Failed to predict moood - ${err}`,
     });
+  }
+};
+
+module.exports.put_user_journal = async (req, res) => {
+  try {
+    class L2 {
+      static className = "L2";
+
+      constructor(config) {
+        return tf.regularizers.l1l2(config);
+      }
+    }
+    tf.serialization.registerClass(L2);
+
+    const model = await tf.loadLayersModel(
+      process.env.JOURNAL_MODEL_EXERCISE_URL
+    );
+
+    const { id } = req.params;
+    const { title, text } = req.body;
+    const { mood } = await predictMood(model, text);
+
+    const journal = await Journal.findByIdAndUpdate(
+      id,
+      { title, text },
+      { new: true }
+    );
+    journal.mood = mood;
+
+    const dayNames = [
+      "Minggu",
+      "Senin",
+      "Selasa",
+      "Rabu",
+      "Kamis",
+      "Jumat",
+      "Sabtu",
+    ];
+
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    function formatDateToIndonesian(date) {
+      const dayName = dayNames[date.getDay()];
+      const day = date.getDate();
+      const monthName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+
+      return `${dayName}, ${day} ${monthName} ${year}`;
+    }
+
+    const now = new Date(Date.now());
+    journal.updatedAt = formatDateToIndonesian(now);
+
+    await journal.save();
+
+    res.status(200).json({
+      error: false,
+      message: "success updating user journal",
+      data: journal,
+    });
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: true, message: `Failed to update user journal - ${err}` });
+  }
+};
+
+module.exports.delete_user_journal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const journal = await Journal.findByIdAndDelete(id);
+    res
+      .status(200)
+      .json({
+        error: false,
+        message: "success deleting user journal",
+        data: journal,
+      });
+  } catch (err) {
+    f;
+    res
+      .status(400)
+      .json({ error: true, message: `Failed to delete user journal - ${err}` });
   }
 };
 
