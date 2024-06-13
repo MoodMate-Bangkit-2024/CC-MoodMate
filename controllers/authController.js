@@ -344,13 +344,11 @@ module.exports.delete_user_journal = async (req, res) => {
   try {
     const { id } = req.params;
     const journal = await Journal.findByIdAndDelete(id);
-    res
-      .status(200)
-      .json({
-        error: false,
-        message: "success deleting user journal",
-        data: journal,
-      });
+    res.status(200).json({
+      error: false,
+      message: "success deleting user journal",
+      data: journal,
+    });
   } catch (err) {
     f;
     res
@@ -360,6 +358,8 @@ module.exports.delete_user_journal = async (req, res) => {
 };
 
 // Chat Bot
+const main = require("../services/inferenceService2");
+
 module.exports.get_user_chat = async (req, res) => {
   try {
     const user = req.user;
@@ -385,8 +385,7 @@ module.exports.post_user_prompt = async (req, res) => {
 
     const { prompt } = req.body;
     const promptAndResponse = new Prompt({ prompt });
-    promptAndResponse.moodmateResponse =
-      "Halo user! Saya moodmate siap membantu!";
+    promptAndResponse.moodmateResponse = await main(prompt);
     promptAndResponse.author = req.user;
 
     const { id } = req.params;

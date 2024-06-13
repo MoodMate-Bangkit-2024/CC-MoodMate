@@ -1,60 +1,72 @@
 const tf = require("@tensorflow/tfjs-node");
-const fs = require("fs");
-const path = require("path");
+const fs = require("fs").promises;
 
-// Load the word index
-const wordIndexPath = path.join(__dirname, "../word_index_chatbot.json");
-const wordIndex = JSON.parse(fs.readFileSync(wordIndexPath, "utf8"));
+const MODEL_PATH = "./tfjs_model/model.json";
+const WORD_INDEX_PATH = "./word_index_chatbot.json";
+const DATA_PATH = "./data.json";
 
-// Preprocessing functions
-function lowercase(review) {
-  return review.toLowerCase();
+let model;
+let wordIndex;
+let intents;
+
+async function loadModel() {
+  model = await tf.loadLayersModel(`file://${MODEL_PATH}`);
+  console.log("Model loaded");
 }
 
-function removePunctuation(review) {
-  return review.replace(/[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/g, "");
+async function loadWordIndex() {
+  const wordIndexData = await fs.readFile(WORD_INDEX_PATH, "utf8");
+  wordIndex = JSON.parse(wordIndexData);
+  console.log("Word index loaded");
 }
 
-function preprocessText(review) {
-  review = lowercase(review);
-  review = removePunctuation(review);
-  return review;
+async function loadIntents() {
+  const intentsData = await fs.readFile(DATA_PATH, "utf8");
+  intents = JSON.parse(intentsData).intents;
+  console.log("Intents loaded");
 }
 
-// Tokenizer functions
-function textsToSequences(texts) {
-  return texts.map((text) =>
-    text.split(" ").map((word) => wordIndex[word] || wordIndex["<OOV>"])
-  );
+// predict
+async function predictResponse(userInput) {
+  const preprocessedInput = removePunctuationAndLowercase(userInput)
+    .split(" ")
+    .map((word) => wordIndex[word] || 0);
+  const maxLen = 12;
+  const paddedInput = padSequences([preprocessedInput], maxLen);
+  const tensorInput = tf.tensor2d(paddedInput, [1, maxLen]);
+
+  const prediction = model.predict(tensorInput);
+  const predictedIndex = prediction.argMax(-1).dataSync()[0];
+  const predictedTag = intents[predictedIndex].tag;
+
+  // response for predicted tag
+  const response = intents.find((intent) => intent.tag === predictedTag)
+    .responses[0];
+  return response;
 }
 
-function padSequences(sequences, maxLength) {
+// preprocess
+function removePunctuationAndLowercase(text) {
+  return text.toLowerCase().replace(/[^\w\s]/gi, "");
+}
+
+function padSequences(sequences, maxLen) {
   return sequences.map((seq) => {
-    if (seq.length > maxLength) {
-      return seq.slice(0, maxLength);
-    } else {
-      const padded = new Array(maxLength).fill(0);
-      for (let i = 0; i < seq.length; i++) {
-        padded[i] = seq[i];
-      }
-      return padded;
-    }
+    const padding = new Array(maxLen - seq.length).fill(0);
+    return padding.concat(seq).slice(-maxLen);
   });
 }
 
-async function predictMood(model, prompt) {
-  try {
-    const preprocessedText = preprocessText(prompt);
-    const sequences = textsToSequences([preprocessedText]);
-    const paddedSequences = padSequences(sequences, 10);
-    const inputTensor = tf.tensor2d(paddedSequences);
+// function to test the model
+async function main(prompt) {
+  await loadModel();
+  await loadWordIndex();
+  await loadIntents();
 
-    const moodmateResponse = model.predict(inputTensor);
-
-    return { moodmateResponse };
-  } catch (err) {
-    throw `Terjadi kesalahan dalam melakukan prediksi - ${err}`;
-  }
+  // Test with user input
+  const userInput = prompt;
+  const response = await predictResponse(userInput);
+  return response;
 }
 
-module.exports = predictMood;
+module.exports = main;

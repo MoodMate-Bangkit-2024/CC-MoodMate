@@ -2,6 +2,8 @@ const tf = require("@tensorflow/tfjs-node");
 const fs = require("fs");
 const path = require("path");
 
+const { Stemmer, Tokenizer } = require("sastrawijs");
+
 // Load the word index
 const wordIndexPath = path.join(__dirname, "../word_index.json");
 const wordIndex = JSON.parse(fs.readFileSync(wordIndexPath, "utf8"));
@@ -64,6 +66,16 @@ function preprocessText(review) {
   review = removeSpace(review);
   review = removeEmoji(review);
   review = repeatChar(review);
+
+  const stemmed = [];
+  const stemmer = new Stemmer();
+  const tokenizer = new Tokenizer();
+
+  const words = tokenizer.tokenize(review);
+
+  for (const word of words) {
+    stemmed.push(stemmer.stem(word));
+  }
   return review;
 }
 
