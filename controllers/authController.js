@@ -3,6 +3,7 @@ const User = require("../models/user");
 
 const Music = require("../models/music");
 const Article = require("../models/article");
+const Movie = require("../models/movie");
 
 const Explore = require("../models/explore");
 
@@ -135,6 +136,24 @@ module.exports.get_recommendation = async (req, res) => {
       res.status(400).json({
         error: true,
         message: `Failed to query article recommendation - ${err}`,
+      });
+    }
+  } else if (type === "movie") {
+    try {
+      const recommendation = await Movie.find({
+        category,
+      });
+      res.status(200).json({
+        error: false,
+        message: "success",
+        type,
+        category,
+        data: recommendation,
+      });
+    } catch (err) {
+      res.status(400).json({
+        error: true,
+        message: `Failed to query movie recommendation - ${err}`,
       });
     }
   }
