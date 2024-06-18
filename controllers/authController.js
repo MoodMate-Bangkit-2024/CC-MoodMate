@@ -386,7 +386,7 @@ module.exports.get_user_chat = async (req, res) => {
     if (user === id) {
       const chat = await Chat.findOne({ author: user }).populate("prompts");
       return res
-        .status(400)
+        .status(200)
         .json({ error: false, message: "success", data: chat.prompts });
     } else {
       throw "You don't have access to this chat resource";
